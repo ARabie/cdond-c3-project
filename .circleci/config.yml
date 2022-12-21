@@ -125,6 +125,7 @@ jobs:
             npm install
             npm audit fix --force
             npm audit fix --force
+            npm audit fix --force
             npm audit --audit-level=critical
 
 #   deploy-infrastructure:
