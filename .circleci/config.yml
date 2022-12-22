@@ -347,7 +347,7 @@ jobs:
             echo "${BACKEND_PUBLIC_IP}"
             if curl "${BACKEND_PUBLIC_IP}:3030/api/status" | grep "ok"
             then
-                return 1
+                return 0
             else
                 return 1
             fi
