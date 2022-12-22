@@ -28,7 +28,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure https://kvdb.io/{STORE_BUCKET}/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure https://kvdb.io/XiainsHXxtFtxA66TV1ouy/migration_<< parameters.Workflow_ID >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
@@ -230,7 +230,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then 
-              curl https://kvdb.io/{STORE_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1' 
+              curl https://kvdb.io/XiainsHXxtFtxA66TV1ouy/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1' 
             fi
 
       - destroy-environment
@@ -312,6 +312,7 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+            cp artifact.tar.gz .circleci/ansible/roles/deploy/fiels
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
