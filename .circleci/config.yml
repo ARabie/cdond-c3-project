@@ -133,11 +133,12 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - apt-get install tar
-      - apt-get install gzip
+
       - run:
           name: Ensure back-end infrastructure exists
           command: |
+            apt install tar
+            apt install gzip
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
