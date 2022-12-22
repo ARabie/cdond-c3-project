@@ -10,7 +10,7 @@
    state: latest
    update_cache: yes
 
-- name: "instapp pm global"
+- name: "install pm global"
   npm:
    name: pm2
-   gloabal: yes
+   global: yes
