@@ -35,4 +35,4 @@
 
   roles:
     - configure-server
-    - configure-prometheus-node-explorer
+    - configure-prometheus-node-exporter
