@@ -347,9 +347,9 @@ jobs:
             echo "${BACKEND_PUBLIC_IP}"
             if curl "${BACKEND_PUBLIC_IP}:3030/api/status" | grep "ok"
             then
-                return 0
+                exit 0
             else
-                return 1
+                exit 1
             fi
       - run:
           name: Frontend smoke test.
@@ -358,9 +358,9 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              exit 1
             else
-              return 1
+              exit 1
             fi
       - destroy-environment
       - revert-migrations
