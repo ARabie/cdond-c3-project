@@ -251,7 +251,7 @@ jobs:
             sudo apt install gzip tar
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
             unzip awscliv2.zip
-            sudo ./aws/install
+            sudo ./aws/install -y
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
             sudo apt install -y nodejs
             cd frontend
@@ -264,7 +264,7 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
             echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
-            cat ronted/.env
+            cat frontend/.env
             
       - run:
           name: Deploy frontend objects
@@ -275,22 +275,47 @@ jobs:
       # Here's where you will add some code to rollback on failure      
       - destroy-environment
       - revert-migrations
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  deploy-backend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - add_ssh_keys: 
+          fingerprints: ["de:9b:99:20:ac:12:ab:68:6a:e9:65:98:9f:87:8d:63"]
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update
+            sudo apt install gzip tar
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+            unzip awscliv2.zip
+            sudo ./aws/install -y
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
+            sudo apt install -y nodejs
+            sudo apt install software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+            cd backend
+            npm install
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment
+      - revert-migrations
 
 #   smoke-test:
 #     docker:
