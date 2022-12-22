@@ -1,6 +1,6 @@
 - name: "Creates backend app directory"
   file: 
-    path: —/backendapp
+    path: ~/backendapp
     state: directory 
 
 - name: "Unarchive backend files"
@@ -10,12 +10,12 @@
 
 - name: "Installing Node Dependencies"
   shell: |
-      cd -/backendapp
+      cd ~/backendapp
       npm i 
 
 - name: "Executing Node app with PM2"
   shell: |
-    cd '/backendapp
+    cd ~/backendapp
     pm2 stop default
     pm2 start npm -- start
   register: execute_node
