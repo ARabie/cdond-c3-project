@@ -94,7 +94,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [backend-build]
       - run:
           name: backend test
           command: |
@@ -123,7 +123,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [backend-build]
       - run:
           name: backend scan
           command: |
@@ -234,39 +234,47 @@ jobs:
             fi
 
       - destroy-environment
-      # - revert-migrations
+      - revert-migrations
      # Here's where you will add some code to rollback on failure      
 
-  # deploy-frontend:
-  #   docker:
-  #    - image: cimg/base:stable
-  #   steps:
-  #     - checkout
-          
-  #     - run:
-  #         name: Install dependencies
-  #         command: |
-  #           sudo apt update
-  #           sudo apt install gzip tar
-  #           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
-  #           unzip awscliv2.zip
-  #           sudo ./aws/install
-  #           curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
-  #           sudo apt install -y nodejs
-  #           cd frontend
-  #           npm install
-  #     - run:
-  #         name: Get backend url
-  #         command: |
-  #           # your code here
-  #           export API_URL="http://${BACKEND_IP}:3030"
-  #           echo "${API_URL}"
-  #     - run:
-  #         name: Deploy frontend objects
-  #         command: |
-  #           # your code here
+  deploy-frontend:
+    docker:
+     - image: cimg/base:stable
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update
+            sudo apt install gzip tar
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+            unzip awscliv2.zip
+            sudo ./aws/install
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
+            sudo apt install -y nodejs
+            cd frontend
+            npm install
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+            echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> fronted/.env
+            cat ronted/.env
+            
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm run build
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       # Here's where you will add some code to rollback on failure      
-                    
+      - destroy-environment
+      - revert-migrations
 #   deploy-backend:
 #     docker:
 #       # Docker image here that supports Ansible
@@ -366,8 +374,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
