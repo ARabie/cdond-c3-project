@@ -251,7 +251,7 @@ jobs:
             sudo apt install gzip tar
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
             unzip awscliv2.zip
-            sudo ./aws/install -y
+            sudo ./aws/install
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
             sudo apt install -y nodejs
             cd frontend
@@ -293,7 +293,7 @@ jobs:
             sudo apt install gzip tar
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
             unzip awscliv2.zip
-            sudo ./aws/install -y
+            sudo ./aws/install
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash
             sudo apt install -y nodejs
             sudo apt install software-properties-common
