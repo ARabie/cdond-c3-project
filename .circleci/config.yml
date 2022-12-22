@@ -399,7 +399,7 @@ jobs:
               --tags project=udapeople
       - destroy-environment
       - revert-migrations
-cleanup:
+  cleanup:
     docker:
       - image: cimg/base:stable
     steps:
