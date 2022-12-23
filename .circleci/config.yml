@@ -131,7 +131,6 @@ jobs:
             npm install
             npm audit fix --force
             npm audit fix --force
-            npm audit fix --force
             npm audit --audit-level=critical
 
   deploy-infrastructure:
@@ -425,9 +424,9 @@ jobs:
             echo OldWorkflowID: "${OldWorkflowID}"
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
-            aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+            aws cloudformation delete-stack --stack-name udapeople-backend-${OldWorkflowID}
             aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
-            aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${OldWorkflowID}
             fi
                         
 
@@ -442,12 +441,12 @@ workflows:
           requires: [build-backend]
       # I'm skipping scanning backend as it seemes ther is un patched vulnerabilities  in class-validator
       
-      # - scan-backend:
-      #     requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
