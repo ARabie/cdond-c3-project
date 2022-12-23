@@ -423,7 +423,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            export OldWorkflowID=(curl --insecure https://kvdb.io/XiainsHXxtFtxA66TV1ouy/old_workflow_id)
+            export OldWorkflowID=$(curl --insecure https://kvdb.io/XiainsHXxtFtxA66TV1ouy/old_workflow_id)
             echo OldWorkflowID: "${OldWorkflowID}"
             echo s3://udapeople-${OldWorkflowID}
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
